@@ -1,0 +1,24 @@
+<project name="ZIP App Files" default="ZipAppFiles">
+
+    <description>
+        Creates a ZIP file with the App files that can be uploaded to PhoneGap Build
+    </description>
+
+    <target name="ZipAppFiles">
+        <copydir dest="www/resources" src="resources"/>
+        <zip destfile="app.zip">
+            <fileset dir="." defaultexcludes="no">
+                <include name="www/**/*"/>
+                <include name="config.xml"/>
+                <exclude name="resources/icon.png"/>
+                <exclude name="resources/splash.png"/>
+            </fileset>
+            <fileset dir="resources" defaultexcludes="no">
+                <include name="icon.png"/>
+                <include name="splash.png"/>
+            </fileset>
+        </zip>
+        <delete dir="www/resources"/>
+    </target>
+
+</project>

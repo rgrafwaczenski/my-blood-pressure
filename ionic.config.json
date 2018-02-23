@@ -1,0 +1,8 @@
+{
+  "name": "blutduck",
+  "app_id": "e8a3e4f7",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

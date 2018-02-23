@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Mein Blutdruck</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-list>
+        <ion-row *ngFor="let item of getDataItems()" justify-content-start [ngClass]="getRowClass(item)"
+                 (click)="selectItem(item)">
+            <ion-col col-6>
+                {{formatTime(item)}}
+            </ion-col>
+            <ion-col col-2 [ngClass]="getSystoleClass(item)">
+                {{item.value.systole}}
+            </ion-col>
+            <ion-col col-2 [ngClass]="getDiastoleClass(item)">
+                {{item.value.diastole}}
+            </ion-col>
+            <ion-col col-2>
+                {{item.value.pulse}}
+            </ion-col>
+        </ion-row>
+    </ion-list>
+    <ion-fab right bottom *ngIf="isAnyItemSelected()" (click)="deleteSelectedItem()">
+        <button ion-fab style="margin-bottom:16rem" color="danger">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+    </ion-fab>
+    <ion-fab right bottom *ngIf="isAnyItemSelected()" (click)="showInput()">
+        <button ion-fab style="margin-bottom:8rem" color="secondary">
+            <ion-icon name="create"></ion-icon>
+        </button>
+    </ion-fab>
+    <ion-fab right bottom>
+        <button ion-fab (click)="showInput(true)">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
+
+</ion-content>

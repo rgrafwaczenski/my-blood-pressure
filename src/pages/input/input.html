@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Mein Blutdruck</ion-title>
+        <ion-buttons left>
+            <button ion-button (click)="dismiss()">
+                <ion-icon name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons right>
+            <button ion-button (click)="save()" *ngIf="buttonEnabled()">
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
+            <button ion-button *ngIf="!buttonEnabled()" disabled>
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-grid>
+        <ion-row justify-content-center>
+            <ion-col col-12>
+                <ion-label color="primary" stacked="">Zeit</ion-label>
+                <ion-datetime displayFormat="DD/MM/YYYY H:mm" [(ngModel)]="time" style="padding:0"></ion-datetime>
+            </ion-col>
+        </ion-row>
+        <ion-row justify-content-center>
+            <ion-col col-4>
+                <ion-label color="primary" stacked>Systole</ion-label>
+                <ion-input type="number" [(ngModel)]="systole" style="padding:0"></ion-input>
+            </ion-col>
+            <ion-col col-4>
+                <ion-label color="primary" stacked>Diastole</ion-label>
+                <ion-input type="number" [(ngModel)]="diastole" style="padding:0"></ion-input>
+            </ion-col>
+            <ion-col col-4>
+                <ion-label color="primary" stacked>Puls</ion-label>
+                <ion-input type="number" [(ngModel)]="pulse" style="padding:0"></ion-input>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
