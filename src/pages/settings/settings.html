@@ -1,0 +1,39 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Einstellungen</ion-title>
+        <ion-buttons left>
+            <button ion-button (click)="dismiss()">
+                <ion-icon name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-grid>
+        <ion-row justify-content-center>
+            <ion-col>
+                <ion-label color="primary" stacked>Systole: Krankhafte Hypertonie</ion-label>
+                <ion-input type="number" class="ill" [(ngModel)]="dataProvider.person.systoleDanger"
+                           style="padding:0"></ion-input>
+            </ion-col>
+            <ion-col>
+                <ion-label color="primary" stacked>Systole: Erhöht</ion-label>
+                <ion-input type="number" class="warning" [(ngModel)]="dataProvider.person.systoleWarning"
+                           style="padding:0"></ion-input>
+            </ion-col>
+        </ion-row>
+        <ion-row justify-content-center>
+            <ion-col>
+                <ion-label color="primary" stacked>Diastole: Krankhafte Hypertonie</ion-label>
+                <ion-input type="number" class="ill" [(ngModel)]="dataProvider.person.diastoleDanger"
+                           style="padding:0"></ion-input>
+            </ion-col>
+            <ion-col>
+                <ion-label color="primary" stacked>Diastole: Erhöht</ion-label>
+                <ion-input type="number" class="warning" [(ngModel)]="dataProvider.person.diastoleWarning"
+                           style="padding:0"></ion-input>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

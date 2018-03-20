@@ -4,16 +4,4 @@ page-list {
   .selektiert {
     background-color: color($colors, medium);
   }
-  .ill {
-    color: color($colors, ill);
-    font-weight: bold;
-  }
-  .warning {
-    color: color($colors, warning);
-    font-weight: bold;
-  }
-  .healthy {
-    color: color($colors, healthy);
-    font-weight: bold;
-  }
 }

@@ -7,15 +7,19 @@ import {StatusBar} from '@ionic-native/status-bar';
 import {MyApp} from './app.component';
 import {ListPage} from '../pages/list/list';
 import {IonicStorageModule} from "@ionic/storage";
-import {DataProvider} from '../providers/DatenProvider';
+import {DataProvider} from '../providers/DataProvider';
 import {InputPage} from "../pages/input/input";
+import {SettingsPage} from "../pages/settings/settings";
+import {File} from "@ionic-native/file";
+import {Device} from "@ionic-native/device";
 
 
 @NgModule({
     declarations: [
         MyApp,
         ListPage,
-        InputPage
+        InputPage,
+        SettingsPage
     ],
     imports: [
         BrowserModule,
@@ -26,11 +30,14 @@ import {InputPage} from "../pages/input/input";
     entryComponents: [
         MyApp,
         ListPage,
-        InputPage
+        InputPage,
+        SettingsPage
     ],
     providers: [
         StatusBar,
         SplashScreen,
+        File,
+        Device,
         DataProvider
     ]
 })

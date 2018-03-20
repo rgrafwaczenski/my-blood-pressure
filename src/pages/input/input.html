@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>Mein Blutdruck</ion-title>
+        <ion-title>Blutdruck eingeben</ion-title>
         <ion-buttons left>
             <button ion-button (click)="dismiss()">
                 <ion-icon name="arrow-back"></ion-icon>
@@ -19,6 +19,12 @@
 
 <ion-content padding>
     <ion-grid>
+        <ion-row justify-content-center>
+            <ion-col col-12>
+                <ion-label color="primary" stacked="">Kommentar</ion-label>
+                <ion-input type="text" [(ngModel)]="comment" style="padding:0"></ion-input>
+            </ion-col>
+        </ion-row>
         <ion-row justify-content-center>
             <ion-col col-12>
                 <ion-label color="primary" stacked="">Zeit</ion-label>

@@ -1,13 +1,15 @@
 import {AlertController, ModalController, NavController} from 'ionic-angular';
 import {Component, Input} from '@angular/core';
-import {DataProvider} from "../../providers/DatenProvider";
+import {DataProvider} from "../../providers/DataProvider";
 import {MeasurementTime} from "../../modules/model/MeasurementTime";
 import {Measurement} from "../../modules/model/Measurement";
 import {DataItem} from "../../modules/model/DataItem";
-import {DataItems} from "../../modules/model/DataItems";
 import * as moment from 'moment';
 import {InputPage} from "../input/input";
+import {SettingsPage} from "../settings/settings";
+import {DisplayRow} from "../../modules/model/DisplayRow";
 
+declare var cordova: any;    //global;
 
 @Component({
     selector: 'page-list',
@@ -19,15 +21,18 @@ export class ListPage {
     @Input() diastole: number;
     @Input() puls: number;
     private selectedItem: DataItem;
+    private maxDisplayIndex: number;
+    private pageSize: number = 20;
 
     constructor(public navCtrl: NavController, private daten: DataProvider, public modalCtrl: ModalController, public alertCtrl: AlertController) {
+        this.maxDisplayIndex = this.pageSize;
     }
 
     ionViewWillEnter() {
         this.zeit = moment().format();
     }
 
-    public speichern(): void {
+    public save(): void {
         let messzeit = new MeasurementTime(this.zeit);
         let messwert: Measurement = {systole: this.systole, diastole: this.diastole, pulse: this.puls};
         this.daten.newItem(new DataItem(messzeit, messwert));
@@ -37,8 +42,22 @@ export class ListPage {
         this.puls = null;
     }
 
-    public getDataItems(): DataItems {
-        return this.daten.dataItems;
+    public getDataItems(): Array<DisplayRow> {
+        let shownItems = [];
+        if (this.daten.dataItems != null) {
+            let effectiveDisplayIndex = Math.min(this.daten.dataItems.length, this.maxDisplayIndex);
+            let previousItem: DataItem = null;
+            for (let pos = 0; pos < effectiveDisplayIndex; pos++) {
+                let dataItem: DataItem = this.daten.dataItems[pos];
+                if (previousItem == null || previousItem.time.year != dataItem.time.year || previousItem.time.month != dataItem.time.month) {
+                    let month: string = dataItem.time.month < 10 ? '0' + dataItem.time.month : '' + dataItem.time.month;
+                    shownItems.push({monthDescription: month + " / " + dataItem.time.year});
+                }
+                shownItems.push({dataItem: dataItem});
+                previousItem = dataItem;
+            }
+        }
+        return shownItems;
     }
 
     public buttonEnabled(): boolean {
@@ -49,36 +68,40 @@ export class ListPage {
         return this.selectedItem != null;
     }
 
-    public selectItem(wert: DataItem): void {
-        this.selectedItem = wert;
+    public selectItem(dataItem: DataItem): void {
+        this.selectedItem = dataItem;
     }
 
-    private isSelected(wert: DataItem): boolean {
-        return this.selectedItem != null && this.selectedItem.id == wert.id;
+    private isSelected(dataItem: DataItem): boolean {
+        return dataItem != null && this.selectedItem != null && this.selectedItem.id == dataItem.id;
     }
 
-    public getRowClass(wert: DataItem): string {
-        return this.isSelected(wert) ? "selektiert" : "normal";
+    public getRowClass(dataItem: DataItem): string {
+        return this.isSelected(dataItem) ? "selektiert" : "normal";
     }
 
-    public formatTime(wert: DataItem): string {
-        return MeasurementTime.toMoment(wert.time).format("DD.MM.YYYY HH:mm");
+    public formatTime(dataItem: DataItem): string {
+        return dataItem == null ? "" : MeasurementTime.toMoment(dataItem.time).format("DD.MM HH:mm");
     }
 
-    public getSystoleClass(wert: DataItem): string {
-        if (wert.value.systole >= this.daten.person.systoleDanger)
+    public getSystoleClass(dataItem: DataItem): string {
+        if (dataItem == null)
+            return "";
+        if (dataItem.value.systole >= this.daten.person.systoleDanger)
             return "ill";
-        else if (wert.value.systole > this.daten.person.systoleWarning)
+        else if (dataItem.value.systole > this.daten.person.systoleWarning)
             return "warning";
         else
             return "healthy";
 
     }
 
-    public getDiastoleClass(wert: DataItem): string {
-        if (wert.value.diastole >= this.daten.person.diastoleDanger)
+    public getDiastoleClass(dataItem: DataItem): string {
+        if (dataItem == null)
+            return "";
+        if (dataItem.value.diastole >= this.daten.person.diastoleDanger)
             return "ill";
-        else if (wert.value.diastole > this.daten.person.diastoleWarning)
+        else if (dataItem.value.diastole > this.daten.person.diastoleWarning)
             return "warning";
         else
             return "healthy";
@@ -89,6 +112,31 @@ export class ListPage {
             this.selectedItem = null;
         let modal = this.modalCtrl.create(InputPage, {selectedItem: this.selectedItem});
         modal.present();
+    }
+
+
+    public showSettings(): void {
+        let modal = this.modalCtrl.create(SettingsPage);
+        modal.present();
+    }
+
+    public createPDF(): void {
+        let options = {
+            documentsize: 'a4',
+            landscape: 'portrait',
+            type: 'share'
+        };
+        let html = '<html><body>' + document.getElementById("dataItems").innerHTML + '</body></html>';
+        cordova.plugins.pdf.fromData(html, options)
+            .then(() => 'ok');
+    }
+
+    public doInfinite(infiniteScroll) {
+        setTimeout(() => {
+            this.maxDisplayIndex += this.pageSize;
+            this.maxDisplayIndex = Math.min(this.maxDisplayIndex, this.daten.dataItems.length);
+            infiniteScroll.complete();
+        }, 100);
     }
 
     public deleteSelectedItem(): void {

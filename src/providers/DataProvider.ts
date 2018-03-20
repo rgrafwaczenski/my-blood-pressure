@@ -4,7 +4,6 @@ import {Storage} from '@ionic/storage';
 import {PersonalSettings} from "../modules/model/PersonalSettings";
 import {DataItem} from "../modules/model/DataItem";
 import {MeasurementTime} from "../modules/model/MeasurementTime";
-import {Datensaetze} from "../modules/model/old/Daten";
 
 @Injectable()
 export class DataProvider {
@@ -12,36 +11,28 @@ export class DataProvider {
     public mostRecentTime: MeasurementTime;
     public person: PersonalSettings;
     public dataItems: DataItems;
-    public messwerte: Datensaetze;
-
 
     constructor(private storage: Storage) {
+        // Load data from storage waterfall-style:
         storage.get("maxId").then(
             (value) => {
                 this.maxId = value;
                 if (this.maxId == null)
                     this.maxId = 1;
-            }
-        );
-        this.person = new PersonalSettings();
-        // Code below currently not needed (personal settings can not be edited yet)
-        // storage.get("person").then(
-        //   (value) => {
-        //     this.person = value;
-        //     if (this.person == null)
-        //       this.person = new PersonalSettings();
-        //   }
-        // );
-        storage.get("dataItems").then(
-            (value) => {
-                this.dataItems = value;
-                if (this.dataItems == null) {
-                    storage.get("messwerte").then(
-                        (value) => {
-                            // Data conversion fallback: Pre-alpha version of data stored with german property names
-                            this.dataItems = new DataItems(value);
-                        });
-                }
+                storage.get("person").then(
+                    (value) => {
+                        this.person = value;
+                        if (this.person == null)
+                            this.person = new PersonalSettings();
+                        storage.get("dataItems").then(
+                            (dataFromStorage) => {
+                                this.dataItems = dataFromStorage;
+                                if (this.dataItems == null)
+                                    this.dataItems = new DataItems();
+                            }
+                        );
+                    }
+                );
             }
         );
     }
@@ -52,25 +43,31 @@ export class DataProvider {
         this.store();
     }
 
-
+    private getByTimestamp(stamp: number) {
+        for (let index = 0; index < this.dataItems.length; index++) {
+            if (stamp == this.dataItems[index].time.orderingTimeStamp)
+                return this.dataItems[index];
+        }
+        return null;
+    }
     public editItem(newVersionOfItem: DataItem) {
         this.deleteById(newVersionOfItem.id);
         this.insertSorted(newVersionOfItem);
         this.store();
     }
 
-    private insertSorted(messwert: DataItem) {
-        let drin = false;
+    private insertSorted(dataItem: DataItem) {
+        let itemInserted = false;
         for (let index = 0; index < this.dataItems.length; index++) {
-            if (messwert.time.orderingTimeStamp < this.dataItems[index].time.orderingTimeStamp) {
-                this.dataItems.splice(index, 0, messwert);
-                drin = true;
+            if (dataItem.time.orderingTimeStamp < this.dataItems[index].time.orderingTimeStamp) {
+                this.dataItems.splice(index, 0, dataItem);
+                itemInserted = true;
                 break;
             }
         }
-        if (!drin)
-            this.dataItems.push(messwert);
-        this.mostRecentTime = messwert.time;
+        if (!itemInserted)
+            this.dataItems.push(dataItem);
+        this.mostRecentTime = dataItem.time;
     }
 
     public deleteById(id: number) {

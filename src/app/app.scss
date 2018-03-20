@@ -13,3 +13,38 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+ion-input {
+  border-radius: 10px !important;
+  padding-left: 10px !important;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background-color: lightgray;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: none !important;
+}
+
+.ill {
+  color: color($colors, ill);
+  font-weight: bold;
+}
+
+ion-input.ill {
+  background-color: color($colors, ill);
+  color: color($colors, dark)
+}
+
+.warning {
+  color: color($colors, warning);
+  font-weight: bold;
+}
+
+ion-input.warning {
+  background-color: color($colors, warning);
+  color: color($colors, dark)
+}
+
+.healthy {
+  color: color($colors, healthy);
+  font-weight: bold;
+}
